@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h3 class="text-center">Mi Coach</h3>
+    <h3 class="text-center">Mi Chat</h3>
     <div class="messaging">
       <div class="inbox_msg">
         <div class="inbox_people">
@@ -150,7 +150,7 @@
               <div class="received_msg">
                 <div class="received_withd_msg">
                   <p>{{message.message}}</p>
-                  <span class="time_date">{{message.createdAt}}</span>
+                  <span class="time_date">{{message.createdAt.toDate()}}</span>
                 </div>
               </div>
             </div>
@@ -164,7 +164,7 @@
                 class="write_msg"
                 placeholder="Escribe un mensaje"
               />
-              <button class="msg_send_btn" type="button">
+              <button @click="saveMessage" class="msg_send_btn" type="button">
                 <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
               </button>
             </div>
@@ -172,10 +172,7 @@
         </div>
       </div>
 
-      <p class="text-center top_spac">
-        Simple Chat con mi
-        <a target="_blank" href="#">Aviva Coach</a>
-      </p>
+      <p class="text-center top_spac">Simple Chat</p>
     </div>
   </div>
 </template>
@@ -184,7 +181,7 @@
 // @ is an alias to /src
 
 export default {
-  name: "PrivateChat",
+  name: "home",
 
   data() {
     return {
@@ -215,7 +212,9 @@ export default {
         .onSnapshot(querySnapshot => {
           let allMessages = [];
           querySnapshot.forEach(doc => {
-            allMessages.push(doc.data());
+            const data = doc.data();
+            console.log(data);
+            allMessages.push(data);
           });
 
           this.messages = allMessages;
