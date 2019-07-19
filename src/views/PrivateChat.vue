@@ -149,14 +149,26 @@
         </div>
         <div class="mesgs">
           <div class="msg_history">
-            <div v-for="message of messages" class="incoming_msg">
-              <div class="incoming_msg_img">
-                <img :src="message.photoURL" :title="message.author" />
+            <div v-for="message of messages">
+              <div v-if="message.displayName===authUser.displayName" class="incoming_msg">
+                <div class="incoming_msg_img">
+                  <img :src="message.photoURL" :title="message.author" />
+                </div>
+                <div class="received_msg">
+                  <div class="received_withd_msg">
+                    <p>{{ message.message }}</p>
+                    <span
+                      class="time_date"
+                    >{{ message.displayName }} | {{ message.createdAt.toDate() }}</span>
+                  </div>
+                </div>
               </div>
-              <div class="received_msg">
-                <div class="received_withd_msg">
+              <div v-if="message.displayName===authUser.displayName" class="outgoing_msg">
+                <div class="sent_msg">
                   <p>{{ message.message }}</p>
-                  <span class="time_date">{{ message.displayName }} {{ message.createdAt.toDate() }}</span>
+                  <span
+                    class="time_date"
+                  >{{ message.displayName }} | {{ message.createdAt.toDate() }}</span>
                 </div>
               </div>
             </div>
@@ -374,8 +386,8 @@ img {
   width: 92%;
 }
 .received_withd_msg p {
-  background: #ebebeb none repeat scroll 0 0;
-  border-radius: 3px;
+  background: #ade none repeat scroll 0 0;
+  border-radius: 0 10px;
   color: #646464;
   font-size: 14px;
   margin: 0;
@@ -399,12 +411,13 @@ img {
 
 .sent_msg p {
   background: #05728f none repeat scroll 0 0;
-  border-radius: 3px;
+  border-radius: 0 10px;
   font-size: 14px;
   margin: 0;
   color: #fff;
   padding: 5px 10px 5px 12px;
   width: 100%;
+  position: relative;
 }
 .outgoing_msg {
   overflow: hidden;
