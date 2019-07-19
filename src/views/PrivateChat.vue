@@ -179,6 +179,7 @@
 
 <script>
 // @ is an alias to /src
+import firebase from "firebase";
 
 export default {
   name: "home",
@@ -224,6 +225,18 @@ export default {
 
   created() {
     this.fetchMessages();
+  },
+
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          next();
+        } else {
+          vm.$router.push("/login");
+        }
+      });
+    });
   }
 };
 </script>
