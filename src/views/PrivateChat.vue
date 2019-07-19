@@ -160,7 +160,7 @@
                     <p>{{ message.message }}</p>
                     <span
                       class="time_date"
-                    >{{ message.displayName }} | {{ message.createdAt.toDate() }}</span>
+                    >{{ message.displayName }} | {{ message.createdAt.toDate() | moment('YYYY/MM/DD, HH:mm') }}</span>
                   </div>
                 </div>
               </div>
@@ -169,7 +169,7 @@
                   <p>{{ message.message }}</p>
                   <span
                     class="time_date"
-                  >{{ message.displayName }} | {{ message.createdAt.toDate() }}</span>
+                  >{{ message.displayName }} | {{ message.createdAt.toDate() | moment('YYYY/MM/DD, HH:mm') }}</span>
                 </div>
               </div>
             </div>
