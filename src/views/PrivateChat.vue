@@ -453,6 +453,9 @@ img {
   top: 11px;
   width: 33px;
 }
+.msg_send_btn::before {
+  content: ">";
+}
 .messaging {
   padding: 0 0 50px 0;
 }
