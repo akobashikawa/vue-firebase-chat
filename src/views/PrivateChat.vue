@@ -1,6 +1,12 @@
 <template>
   <div class="container">
     <h3 class="text-center">Mi Chat</h3>
+    <h4 class="text-center">
+      <div style="width: 50px; display:inline-block;">
+        <img :src="authUser.photoURL" alt="Foto" />
+      </div>
+      {{ authUser.displayName }}
+    </h4>
     <div class="messaging">
       <div class="inbox_msg">
         <div class="inbox_people">
@@ -145,12 +151,12 @@
           <div class="msg_history">
             <div v-for="message of messages" class="incoming_msg">
               <div class="incoming_msg_img">
-                <img src="../assets/user-profile.png" alt="sunil" />
+                <img :src="message.photoURL" :title="message.author" />
               </div>
               <div class="received_msg">
                 <div class="received_withd_msg">
-                  <p>{{message.message}}</p>
-                  <span class="time_date">{{message.createdAt.toDate()}}</span>
+                  <p>{{ message.message }}</p>
+                  <span class="time_date">{{ message.displayName }} {{ message.createdAt.toDate() }}</span>
                 </div>
               </div>
             </div>
@@ -187,7 +193,8 @@ export default {
   data() {
     return {
       message: null,
-      messages: []
+      messages: [],
+      authUser: {}
     };
   },
 
@@ -196,6 +203,8 @@ export default {
       db.collection("chat")
         .add({
           message: this.message,
+          displayName: this.authUser.displayName,
+          photoURL: this.authUser.photoURL,
           createdAt: new Date()
         })
         .then(function(docRef) {
@@ -224,6 +233,14 @@ export default {
   },
 
   created() {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.authUser = user;
+      } else {
+        this.authUser = {};
+      }
+    });
+
     this.fetchMessages();
   },
 
