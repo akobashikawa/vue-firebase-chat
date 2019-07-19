@@ -23,7 +23,7 @@
             <div class="chat_list active_chat">
               <div class="chat_people">
                 <div class="chat_img">
-                  <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
+                  <img src="../assets/user-profile.png" alt="sunil" />
                 </div>
                 <div class="chat_ib">
                   <h5>
@@ -40,7 +40,7 @@
             <div class="chat_list">
               <div class="chat_people">
                 <div class="chat_img">
-                  <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
+                  <img src="../assets/user-profile.png" alt="sunil" />
                 </div>
                 <div class="chat_ib">
                   <h5>
@@ -57,7 +57,7 @@
             <div class="chat_list">
               <div class="chat_people">
                 <div class="chat_img">
-                  <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
+                  <img src="../assets/user-profile.png" alt="sunil" />
                 </div>
                 <div class="chat_ib">
                   <h5>
@@ -74,7 +74,7 @@
             <div class="chat_list">
               <div class="chat_people">
                 <div class="chat_img">
-                  <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
+                  <img src="../assets/user-profile.png" alt="sunil" />
                 </div>
                 <div class="chat_ib">
                   <h5>
@@ -91,7 +91,7 @@
             <div class="chat_list">
               <div class="chat_people">
                 <div class="chat_img">
-                  <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
+                  <img src="../assets/user-profile.png" alt="sunil" />
                 </div>
                 <div class="chat_ib">
                   <h5>
@@ -108,7 +108,7 @@
             <div class="chat_list">
               <div class="chat_people">
                 <div class="chat_img">
-                  <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
+                  <img src="../assets/user-profile.png" alt="sunil" />
                 </div>
                 <div class="chat_ib">
                   <h5>
@@ -125,7 +125,7 @@
             <div class="chat_list">
               <div class="chat_people">
                 <div class="chat_img">
-                  <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
+                  <img src="../assets/user-profile.png" alt="sunil" />
                 </div>
                 <div class="chat_ib">
                   <h5>
@@ -145,7 +145,7 @@
           <div class="msg_history">
             <div v-for="message of messages" class="incoming_msg">
               <div class="incoming_msg_img">
-                <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil" />
+                <img src="../assets/user-profile.png" alt="sunil" />
               </div>
               <div class="received_msg">
                 <div class="received_withd_msg">
