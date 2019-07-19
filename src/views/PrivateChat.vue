@@ -27,122 +27,13 @@
             </div>
           </div>
           <div class="inbox_chat">
-            <div class="chat_list active_chat">
+            <div class="chat_list" v-for="user of users">
               <div class="chat_people">
                 <div class="chat_img">
-                  <img src="../assets/user-profile.png" alt="sunil" />
+                  <img :src="user.photoURL" :title="user.displayName" />
                 </div>
                 <div class="chat_ib">
-                  <h5>
-                    Sunil Rajput
-                    <span class="chat_date">Dec 25</span>
-                  </h5>
-                  <p>
-                    Test, which is a new approach to have all solutions
-                    astrology under one roof.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img">
-                  <img src="../assets/user-profile.png" alt="sunil" />
-                </div>
-                <div class="chat_ib">
-                  <h5>
-                    Sunil Rajput
-                    <span class="chat_date">Dec 25</span>
-                  </h5>
-                  <p>
-                    Test, which is a new approach to have all solutions
-                    astrology under one roof.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img">
-                  <img src="../assets/user-profile.png" alt="sunil" />
-                </div>
-                <div class="chat_ib">
-                  <h5>
-                    Sunil Rajput
-                    <span class="chat_date">Dec 25</span>
-                  </h5>
-                  <p>
-                    Test, which is a new approach to have all solutions
-                    astrology under one roof.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img">
-                  <img src="../assets/user-profile.png" alt="sunil" />
-                </div>
-                <div class="chat_ib">
-                  <h5>
-                    Sunil Rajput
-                    <span class="chat_date">Dec 25</span>
-                  </h5>
-                  <p>
-                    Test, which is a new approach to have all solutions
-                    astrology under one roof.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img">
-                  <img src="../assets/user-profile.png" alt="sunil" />
-                </div>
-                <div class="chat_ib">
-                  <h5>
-                    Sunil Rajput
-                    <span class="chat_date">Dec 25</span>
-                  </h5>
-                  <p>
-                    Test, which is a new approach to have all solutions
-                    astrology under one roof.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img">
-                  <img src="../assets/user-profile.png" alt="sunil" />
-                </div>
-                <div class="chat_ib">
-                  <h5>
-                    Sunil Rajput
-                    <span class="chat_date">Dec 25</span>
-                  </h5>
-                  <p>
-                    Test, which is a new approach to have all solutions
-                    astrology under one roof.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img">
-                  <img src="../assets/user-profile.png" alt="sunil" />
-                </div>
-                <div class="chat_ib">
-                  <h5>
-                    Sunil Rajput
-                    <span class="chat_date">Dec 25</span>
-                  </h5>
-                  <p>
-                    Test, which is a new approach to have all solutions
-                    astrology under one roof.
-                  </p>
+                  <h5>{{ user.displayName }}</h5>
                 </div>
               </div>
             </div>
@@ -214,8 +105,8 @@ export default {
   },
 
   methods: {
-    scrollToBottom() {
-      let box = document.querySelector(".msg_history");
+    scrollToBottom(boxSelector) {
+      let box = document.querySelector(boxSelector);
       box.scrollTop = box.scrollHeight;
     },
 
@@ -248,24 +139,26 @@ export default {
           });
 
           setTimeout(() => {
-            this.scrollToBottom();
-          }, 1000);
+            this.scrollToBottom(".msg_history");
+          }, 100);
           this.messages = allMessages;
         });
     },
 
     fetchUsers() {
-      db.collection("chat")
+      db.collection("users")
         .orderBy("displayName")
         .onSnapshot(querySnapshot => {
-          let users = {};
+          let allUsers = [];
           querySnapshot.forEach(doc => {
             const data = doc.data();
-            console.log(data);
-            users[data.displayName] = data.displayName;
+            allUsers.push(data);
           });
-          console.log(users);
-          // this.users = users;
+
+          setTimeout(() => {
+            this.scrollToBottom(".inbox_chat");
+          }, 100);
+          this.users = allUsers;
         });
     },
 
@@ -286,13 +179,27 @@ export default {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.authUser = user;
+        const authUserEmail = user.email;
+        db.collection("users")
+          .where("email", "==", authUserEmail)
+          .get()
+          .then(querySnapshot => {
+            if (querySnapshot.empty) {
+              const newUser = {
+                email: user.email,
+                displayName: user.displayName,
+                photoURL: user.photoURL
+              };
+              db.collection("users").add(newUser);
+            }
+          });
       } else {
         this.authUser = {};
       }
     });
 
-    this.fetchMessages();
     this.fetchUsers();
+    this.fetchMessages();
   },
 
   beforeRouteEnter(to, from, next) {
