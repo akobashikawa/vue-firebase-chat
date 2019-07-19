@@ -34,6 +34,9 @@
                 </div>
                 <div class="chat_ib">
                   <h5>{{ user.displayName }}</h5>
+                  <span
+                    class="time_date"
+                  >{{ user.lastUpdate.toDate() | moment('YYYY/MM/DD, HH:mm') }}</span>
                 </div>
               </div>
             </div>
@@ -42,25 +45,25 @@
         <div class="mesgs">
           <div class="msg_history">
             <div v-for="message of messages">
-              <div v-if="message.displayName!==authUser.displayName" class="incoming_msg">
+              <div v-if="message.author!==authUser.email" class="incoming_msg">
                 <div class="incoming_msg_img">
-                  <img :src="message.photoURL" :title="message.author" />
+                  <img :src="message.authorUser.photoURL" :title="message.author" />
                 </div>
                 <div class="received_msg">
                   <div class="received_withd_msg">
                     <p>{{ message.message }}</p>
                     <span
                       class="time_date"
-                    >{{ message.displayName }} | {{ message.createdAt.toDate() | moment('YYYY/MM/DD, HH:mm') }}</span>
+                    >{{ message.authorUser.displayName }} | {{ message.createdAt | moment('YYYY/MM/DD, HH:mm') }}</span>
                   </div>
                 </div>
               </div>
-              <div v-if="message.displayName===authUser.displayName" class="outgoing_msg">
+              <div v-if="message.author===authUser.email" class="outgoing_msg">
                 <div class="sent_msg">
                   <p>{{ message.message }}</p>
                   <span
                     class="time_date"
-                  >{{ message.displayName }} | {{ message.createdAt.toDate() | moment('YYYY/MM/DD, HH:mm') }}</span>
+                  >{{ message.authorUser.displayName }} | {{ message.createdAt | moment('YYYY/MM/DD, HH:mm') }}</span>
                 </div>
               </div>
             </div>
@@ -114,8 +117,7 @@ export default {
       db.collection("chat")
         .add({
           message: this.message,
-          displayName: this.authUser.displayName,
-          photoURL: this.authUser.photoURL,
+          author: this.authUser.email,
           createdAt: new Date()
         })
         .then(function(docRef) {
@@ -129,25 +131,34 @@ export default {
     },
 
     fetchMessages() {
-      db.collection("chat")
-        .orderBy("createdAt")
-        .onSnapshot(querySnapshot => {
-          let allMessages = [];
-          querySnapshot.forEach(doc => {
-            const data = doc.data();
-            allMessages.push(data);
-          });
-
-          setTimeout(() => {
-            this.scrollToBottom(".msg_history");
-          }, 100);
-          this.messages = allMessages;
+      db.collection("chat").onSnapshot(querySnapshot => {
+        let allMessages = [];
+        querySnapshot.forEach(doc => {
+          const data = doc.data();
+          data.createdAt = data.createdAt.toDate();
+          db.collection("users")
+            .doc(data.author)
+            .get()
+            .then(userDoc => {
+              if (userDoc.exists) {
+                data.authorUser = userDoc.data();
+              }
+              allMessages.push(data);
+            });
         });
+
+        setTimeout(() => {
+          this.scrollToBottom(".msg_history");
+        }, 100);
+        // allMessages = _.uniqBy(allMessages, "createdAt");
+        console.log(allMessages);
+        this.messages = allMessages;
+      });
     },
 
     fetchUsers() {
       db.collection("users")
-        .orderBy("displayName")
+        .orderBy("lastUpdate")
         .onSnapshot(querySnapshot => {
           let allUsers = [];
           querySnapshot.forEach(doc => {
@@ -179,20 +190,15 @@ export default {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.authUser = user;
-        const authUserEmail = user.email;
+        const newUser = {
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          lastUpdate: new Date()
+        };
         db.collection("users")
-          .where("email", "==", authUserEmail)
-          .get()
-          .then(querySnapshot => {
-            if (querySnapshot.empty) {
-              const newUser = {
-                email: user.email,
-                displayName: user.displayName,
-                photoURL: user.photoURL
-              };
-              db.collection("users").add(newUser);
-            }
-          });
+          .doc(user.email)
+          .set(newUser, { merge: true }); // si ya existe, merge
       } else {
         this.authUser = {};
       }
