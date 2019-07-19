@@ -151,7 +151,7 @@
         <div class="mesgs">
           <div class="msg_history">
             <div v-for="message of messages">
-              <div v-if="message.displayName===authUser.displayName" class="incoming_msg">
+              <div v-if="message.displayName!==authUser.displayName" class="incoming_msg">
                 <div class="incoming_msg_img">
                   <img :src="message.photoURL" :title="message.author" />
                 </div>
@@ -208,7 +208,8 @@ export default {
     return {
       message: null,
       messages: [],
-      authUser: {}
+      authUser: {},
+      users: []
     };
   },
 
@@ -253,6 +254,21 @@ export default {
         });
     },
 
+    fetchUsers() {
+      db.collection("chat")
+        .orderBy("displayName")
+        .onSnapshot(querySnapshot => {
+          let users = {};
+          querySnapshot.forEach(doc => {
+            const data = doc.data();
+            console.log(data);
+            users[data.displayName] = data.displayName;
+          });
+          console.log(users);
+          // this.users = users;
+        });
+    },
+
     logout() {
       firebase
         .auth()
@@ -276,6 +292,7 @@ export default {
     });
 
     this.fetchMessages();
+    this.fetchUsers();
   },
 
   beforeRouteEnter(to, from, next) {
