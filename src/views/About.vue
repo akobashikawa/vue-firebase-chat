@@ -1,5 +1,6 @@
 <template>
   <div class="about">
-    <h1>Simple Chat con Firebase</h1>
+    <h1>Mi Chat</h1>
+    <p>Simple chat para conversar con tus contactos.</p>
   </div>
 </template>

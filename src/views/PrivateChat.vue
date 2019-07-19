@@ -191,7 +191,7 @@
         </div>
       </div>
 
-      <p class="text-center top_spac">Simple Chat</p>
+      <p class="text-center top_spac">Mi Chat - 2019JUL</p>
     </div>
   </div>
 </template>
