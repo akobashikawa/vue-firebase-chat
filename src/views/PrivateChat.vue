@@ -198,6 +198,7 @@
 <script>
 // @ is an alias to /src
 import firebase from "firebase";
+import { setTimeout } from "timers";
 
 export default {
   name: "home",
@@ -211,6 +212,10 @@ export default {
   },
 
   methods: {
+    scrollToBottom() {
+      let box = document.querySelector(".msg_history");
+      box.scrollTop = box.scrollHeight;
+    },
     saveMessage() {
       db.collection("chat")
         .add({
@@ -221,6 +226,7 @@ export default {
         })
         .then(function(docRef) {
           console.log("Document written with ID:", docRef.id);
+          this.scrollToBottom();
         })
         .catch(function(error) {
           console.log("Error adding document:", error);
@@ -235,10 +241,12 @@ export default {
           let allMessages = [];
           querySnapshot.forEach(doc => {
             const data = doc.data();
-            console.log(data);
             allMessages.push(data);
           });
 
+          setTimeout(() => {
+            this.scrollToBottom();
+          }, 1000);
           this.messages = allMessages;
         });
     }
