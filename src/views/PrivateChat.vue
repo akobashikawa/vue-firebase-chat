@@ -6,6 +6,7 @@
         <img :src="authUser.photoURL" alt="Foto" />
       </div>
       {{ authUser.displayName }}
+      <button class="btn" @click="logout">Salir</button>
     </h4>
     <div class="messaging">
       <div class="inbox_msg">
@@ -216,6 +217,7 @@ export default {
       let box = document.querySelector(".msg_history");
       box.scrollTop = box.scrollHeight;
     },
+
     saveMessage() {
       db.collection("chat")
         .add({
@@ -248,6 +250,18 @@ export default {
             this.scrollToBottom();
           }, 1000);
           this.messages = allMessages;
+        });
+    },
+
+    logout() {
+      firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          this.$router.push("/");
+        })
+        .catch(error => {
+          console.log(error);
         });
     }
   },
