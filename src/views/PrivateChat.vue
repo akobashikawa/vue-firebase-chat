@@ -17,17 +17,12 @@
             </div>
             <div class="srch_bar">
               <div class="stylish-input-group">
-                <input type="text" class="search-bar" placeholder="Buscar" />
-                <span class="input-group-addon">
-                  <button type="button">
-                    <i class="fa fa-search" aria-hidden="true"></i>
-                  </button>
-                </span>
+                <input v-model="usersFilter" type="text" class="search-bar" placeholder="Buscar" @keyup="searchUser"/>
               </div>
             </div>
           </div>
           <div class="inbox_chat">
-            <div class="chat_list" v-for="user of users" :key="user.email">
+            <div class="chat_list" v-for="user of usersFiltered" :key="user.email">
               <div class="chat_people">
                 <div class="chat_img">
                   <img :src="user.photoURL" :title="user.displayName" />
@@ -103,7 +98,10 @@ export default {
       message: null,
       messages: [],
       authUser: {},
-      users: []
+      users: [],
+      usersFilter: '',
+      usersFiltered: [],
+      searchTimeout: null,
     };
   },
 
@@ -173,10 +171,22 @@ export default {
           });
           console.log(allUsers);
           this.users = allUsers;
+          this.filterUsers();
           setTimeout(() => {
             this.scrollToBottom(".inbox_chat");
           }, 100);
         });
+    },
+
+    filterUsers() {
+      if (this.usersFilter.trim().length > 0) {
+        this.usersFiltered = this.users.filter(item => {
+          const result = new RegExp(this.usersFilter, 'i').test(item.displayName);
+          return result;
+        });
+      } else {
+        this.usersFiltered = this.users;
+      }
     },
 
     logout() {
@@ -189,6 +199,13 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+
+    searchUser() {
+      window.clearTimeout(this.searchTimeout);
+      this.searchTimeout = window.setTimeout(() => {
+        this.filterUsers();
+      }, 1000);
     }
   },
 
@@ -212,6 +229,7 @@ export default {
 
     this.fetchUsers();
     this.fetchMessages();
+
   },
 
   beforeRouteEnter(to, from, next) {
