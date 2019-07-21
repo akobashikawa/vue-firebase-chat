@@ -47,23 +47,23 @@
             <div v-for="(message, index) of messages" :key="index">
               <div v-if="message.author!==authUser.email" class="incoming_msg">
                 <div class="incoming_msg_img">
-                  <!-- <img :src="message.authorUser.photoURL" :title="message.author" /> -->
+                  <img :src="message.authorUser.photoURL" :title="message.author" />
                 </div>
                 <div class="received_msg">
                   <div class="received_withd_msg">
                     <p>{{ message.message }}</p>
-                    <!-- <span
+                    <span
                       class="time_date"
-                    >{{ message.authorUser.displayName }} | {{ message.createdAt.toDate() | moment('YYYY/MM/DD, HH:mm') }}</span> -->
+                    >{{ message.authorUser.displayName }} | {{ message.createdAt.toDate() | moment('YYYY/MM/DD, HH:mm:ss') }}</span>
                   </div>
                 </div>
               </div>
               <div v-if="message.author===authUser.email" class="outgoing_msg">
                 <div class="sent_msg">
                   <p>{{ message.message }}</p>
-                  <!-- <span
+                  <span
                     class="time_date"
-                  >{{ message.authorUser.displayName }} | {{ message.createdAt | moment('YYYY/MM/DD, HH:mm') }}</span> -->
+                  >{{ message.authorUser.displayName }} | {{ message.createdAt.toDate() | moment('YYYY/MM/DD, HH:mm:ss') }}</span>
                 </div>
               </div>
             </div>
@@ -171,11 +171,11 @@ export default {
             const data = doc.data();
             allUsers.push(data);
           });
-
+          console.log(allUsers);
+          this.users = allUsers;
           setTimeout(() => {
             this.scrollToBottom(".inbox_chat");
           }, 100);
-          this.users = allUsers;
         });
     },
 
