@@ -27,7 +27,7 @@
             </div>
           </div>
           <div class="inbox_chat">
-            <div class="chat_list" v-for="user of users">
+            <div class="chat_list" v-for="user of users" :key="user.email">
               <div class="chat_people">
                 <div class="chat_img">
                   <img :src="user.photoURL" :title="user.displayName" />
@@ -44,26 +44,26 @@
         </div>
         <div class="mesgs">
           <div class="msg_history">
-            <div v-for="message of messages">
+            <div v-for="(message, index) of messages" :key="index">
               <div v-if="message.author!==authUser.email" class="incoming_msg">
                 <div class="incoming_msg_img">
-                  <img :src="message.authorUser.photoURL" :title="message.author" />
+                  <!-- <img :src="message.authorUser.photoURL" :title="message.author" /> -->
                 </div>
                 <div class="received_msg">
                   <div class="received_withd_msg">
                     <p>{{ message.message }}</p>
-                    <span
+                    <!-- <span
                       class="time_date"
-                    >{{ message.authorUser.displayName }} | {{ message.createdAt | moment('YYYY/MM/DD, HH:mm') }}</span>
+                    >{{ message.authorUser.displayName }} | {{ message.createdAt.toDate() | moment('YYYY/MM/DD, HH:mm') }}</span> -->
                   </div>
                 </div>
               </div>
               <div v-if="message.author===authUser.email" class="outgoing_msg">
                 <div class="sent_msg">
                   <p>{{ message.message }}</p>
-                  <span
+                  <!-- <span
                     class="time_date"
-                  >{{ message.authorUser.displayName }} | {{ message.createdAt | moment('YYYY/MM/DD, HH:mm') }}</span>
+                  >{{ message.authorUser.displayName }} | {{ message.createdAt | moment('YYYY/MM/DD, HH:mm') }}</span> -->
                 </div>
               </div>
             </div>
@@ -113,46 +113,52 @@ export default {
       box.scrollTop = box.scrollHeight;
     },
 
-    saveMessage() {
-      db.collection("chat")
-        .add({
-          message: this.message,
-          author: this.authUser.email,
-          createdAt: new Date()
-        })
-        .then(function(docRef) {
-          console.log("Document written with ID:", docRef.id);
-          this.scrollToBottom();
-        })
-        .catch(function(error) {
-          console.log("Error adding document:", error);
-        });
-      this.message = null;
+    saveMessage: async function () {
+      try {
+        const docRef = await db.collection("chat")
+          .add({
+            message: this.message,
+            author: this.authUser.email,
+            createdAt: new Date()
+          });
+        console.log("Document written with ID:", docRef.id);
+        this.scrollToBottom('.msg_history');
+        this.message = null;
+      } catch (error) {
+        console.log("Error adding document:", error);
+      }
     },
 
     fetchMessages() {
-      db.collection("chat").onSnapshot(querySnapshot => {
+      db.collection("chat")
+      .orderBy('createdAt')
+      .onSnapshot(querySnapshot => {
         let allMessages = [];
         querySnapshot.forEach(doc => {
           const data = doc.data();
-          data.createdAt = data.createdAt.toDate();
-          db.collection("users")
-            .doc(data.author)
+          allMessages.push(data);
+        });
+
+        const promises = allMessages
+          .map(message => db.collection("users")
+            .doc(message.author)
             .get()
             .then(userDoc => {
               if (userDoc.exists) {
-                data.authorUser = userDoc.data();
+                message.authorUser = userDoc.data();
               }
-              allMessages.push(data);
-            });
-        });
+            })
+          );
+        
+        Promise.all(promises)
+          .then(() => {
+            console.log(allMessages);
+            this.messages = allMessages;
+            setTimeout(() => {
+              this.scrollToBottom(".msg_history");
+            }, 100);
+          });
 
-        setTimeout(() => {
-          this.scrollToBottom(".msg_history");
-        }, 100);
-        // allMessages = _.uniqBy(allMessages, "createdAt");
-        console.log(allMessages);
-        this.messages = allMessages;
       });
     },
 
@@ -254,7 +260,7 @@ img {
   display: inline-block;
   text-align: right;
   width: 60%;
-  padding: ;
+  padding: 0;
 }
 .headind_srch {
   padding: 10px 29px 10px 20px;
