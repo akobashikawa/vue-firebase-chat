@@ -368,11 +368,11 @@ img {
 }
 
 .sent_msg p {
-  background: #05728f none repeat scroll 0 0;
+  background: #05728f55 none repeat scroll 0 0;
   border-radius: 0 10px;
   font-size: 14px;
   margin: 0;
-  color: #fff;
+  color: #000;
   padding: 5px 10px 5px 12px;
   width: 100%;
   position: relative;
