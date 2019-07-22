@@ -1,8 +1,13 @@
 <template>
   <div class="home">
-    <h3>Usa tu cuenta Google para continuar</h3>
+    <h3>
+      Usa tu cuenta Google para entrar al chat
+      <code>{{ room }}</code>
+    </h3>
 
-    <button @click="login" class="btn btn-primary">Login con Google</button>
+    <p class="mt-4">
+      <button @click="login" class="btn btn-primary">Login con Google</button>
+    </p>
   </div>
 </template>
 
@@ -12,8 +17,25 @@ import firebase from "firebase";
 
 export default {
   name: "login",
+
+  props: {
+    room: {
+      type: String,
+      default: (() => {
+        // genera nombre aleatorio para la sala
+        const charmap = "0123456789abcdefghijklmnopqrstuvwxyz";
+        return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].reduce((s, x) => {
+          const i = Math.floor(Math.random() * charmap.length);
+          s += charmap[i];
+          return s;
+        }, "");
+      })()
+    }
+  },
+
   methods: {
     login() {
+      const room = this.room;
       const $router = this.$router;
 
       var provider = new firebase.auth.GoogleAuthProvider();
@@ -29,7 +51,7 @@ export default {
           // The signed-in user info.
           var user = result.user;
 
-          $router.push("/");
+          $router.push("/?room=" + room);
         })
         .catch(function(error) {
           console.log({ error });

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h3 class="text-center">Mi Chat</h3>
+    <h3 class="text-center" :title="room">Mi Chat</h3>
     <h4 class="text-center">
       <div style="width: 50px; display:inline-block;">
         <img :src="authUser.photoURL" alt="Foto" />
@@ -17,7 +17,13 @@
             </div>
             <div class="srch_bar">
               <div class="stylish-input-group">
-                <input v-model="usersFilter" type="text" class="search-bar" placeholder="Buscar" @keyup="searchUser"/>
+                <input
+                  v-model="usersFilter"
+                  type="text"
+                  class="search-bar"
+                  placeholder="Buscar"
+                  @keyup="searchUser"
+                />
               </div>
             </div>
           </div>
@@ -27,7 +33,12 @@
                 <div class="chat_img">
                   <img :src="user.photoURL" :title="user.displayName" />
                   <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" :id="user.email" v-model="usersSelected[user.email]">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input"
+                      :id="user.email"
+                      v-model="usersSelected[user.email]"
+                    />
                     <label class="custom-control-label" :for="user.email">Ver</label>
                   </div>
                 </div>
@@ -97,41 +108,58 @@ import { setTimeout } from "timers";
 export default {
   name: "home",
 
+  props: {
+    room: {
+      type: String
+    }
+  },
+
   data() {
     return {
       message: null,
       messages: [],
       authUser: {},
       users: [],
-      usersFilter: '',
+      usersFilter: "",
       usersFiltered: [],
       usersSelected: null,
-      searchTimeout: null,
+      searchTimeout: null
     };
   },
 
   computed: {
     messagesFiltered: function() {
-      return this.messages.filter(message => (this.usersSelected.hasOwnProperty(message.author) && this.usersSelected[message.author]));
+      return this.messages.filter(
+        message =>
+          this.usersSelected.hasOwnProperty(message.author) &&
+          this.usersSelected[message.author]
+      );
     }
   },
 
   methods: {
     scrollToBottom(boxSelector) {
       let box = document.querySelector(boxSelector);
+      if (!box) {
+        return;
+      }
       box.scrollTop = box.scrollHeight;
     },
 
-    saveMessage: async function () {
+    saveMessage: async function() {
+      const roomRef = await db
+        .collection("rooms")
+        .doc(this.room)
+        .get();
+
       try {
-        const docRef = await db.collection("chat")
-          .add({
-            message: this.message,
-            author: this.authUser.email,
-            createdAt: new Date()
-          });
+        const docRef = await db.collection("chat").add({
+          message: this.message,
+          author: this.authUser.email,
+          createdAt: new Date()
+        });
         console.log("Document written with ID:", docRef.id);
-        this.scrollToBottom('.msg_history');
+        this.scrollToBottom(".msg_history");
         this.message = null;
       } catch (error) {
         console.log("Error adding document:", error);
@@ -140,35 +168,34 @@ export default {
 
     fetchMessages() {
       db.collection("chat")
-      .orderBy('createdAt')
-      .onSnapshot(querySnapshot => {
-        let allMessages = [];
-        querySnapshot.forEach(doc => {
-          const data = doc.data();
-          allMessages.push(data);
-        });
+        .orderBy("createdAt")
+        .onSnapshot(querySnapshot => {
+          let allMessages = [];
+          querySnapshot.forEach(doc => {
+            const data = doc.data();
+            allMessages.push(data);
+          });
 
-        const promises = allMessages
-          .map(message => db.collection("users")
-            .doc(message.author)
-            .get()
-            .then(userDoc => {
-              if (userDoc.exists) {
-                message.authorUser = userDoc.data();
-              }
-            })
+          const promises = allMessages.map(message =>
+            db
+              .collection("users")
+              .doc(message.author)
+              .get()
+              .then(userDoc => {
+                if (userDoc.exists) {
+                  message.authorUser = userDoc.data();
+                }
+              })
           );
-        
-        Promise.all(promises)
-          .then(() => {
+
+          Promise.all(promises).then(() => {
             console.log(allMessages);
             this.messages = allMessages;
             setTimeout(() => {
               this.scrollToBottom(".msg_history");
             }, 100);
           });
-
-      });
+        });
     },
 
     fetchUsers() {
@@ -196,7 +223,9 @@ export default {
     filterUsers() {
       if (this.usersFilter.trim().length > 0) {
         this.usersFiltered = this.users.filter(item => {
-          const result = new RegExp(this.usersFilter, 'i').test(item.displayName);
+          const result = new RegExp(this.usersFilter, "i").test(
+            item.displayName
+          );
           return result;
         });
       } else {
@@ -225,6 +254,8 @@ export default {
   },
 
   created() {
+    const $router = this.$router;
+
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.authUser = user;
@@ -244,7 +275,6 @@ export default {
 
     this.fetchUsers();
     this.fetchMessages();
-
   },
 
   beforeRouteEnter(to, from, next) {
