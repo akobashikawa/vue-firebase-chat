@@ -26,6 +26,10 @@
               <div class="chat_people">
                 <div class="chat_img">
                   <img :src="user.photoURL" :title="user.displayName" />
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" :id="user.email" v-model="usersSelected[user.email]">
+                    <label class="custom-control-label" :for="user.email">Ver</label>
+                  </div>
                 </div>
                 <div class="chat_ib">
                   <h5>{{ user.displayName }}</h5>
@@ -39,7 +43,7 @@
         </div>
         <div class="mesgs">
           <div class="msg_history">
-            <div v-for="(message, index) of messages" :key="index">
+            <div v-for="(message, index) of messagesFiltered" :key="index">
               <div v-if="message.author!==authUser.email" class="incoming_msg">
                 <div class="incoming_msg_img">
                   <img :src="message.authorUser.photoURL" :title="message.author" />
@@ -101,8 +105,15 @@ export default {
       users: [],
       usersFilter: '',
       usersFiltered: [],
+      usersSelected: null,
       searchTimeout: null,
     };
+  },
+
+  computed: {
+    messagesFiltered: function() {
+      return this.messages.filter(message => (this.usersSelected.hasOwnProperty(message.author) && this.usersSelected[message.author]));
+    }
   },
 
   methods: {
@@ -171,6 +182,10 @@ export default {
           });
           console.log(allUsers);
           this.users = allUsers;
+          this.usersSelected = this.users.reduce((result, item) => {
+            result[item.email] = true;
+            return result;
+          }, {});
           this.filterUsers();
           setTimeout(() => {
             this.scrollToBottom(".inbox_chat");
