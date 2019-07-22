@@ -17,7 +17,7 @@ export default new Router({
       props: (route) => ({ room: route.query.room }),
     },
     {
-      path: '/login/:room?',
+      path: '/login/:_room?',
       name: 'login',
       component: Login,
       props: true

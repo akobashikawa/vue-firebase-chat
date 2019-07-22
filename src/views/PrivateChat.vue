@@ -146,28 +146,30 @@ export default {
       box.scrollTop = box.scrollHeight;
     },
 
-    saveMessage: async function() {
-      const roomRef = await db
-        .collection("rooms")
-        .doc(this.room)
-        .get();
-
-      try {
-        const docRef = await db.collection("chat").add({
-          message: this.message,
-          author: this.authUser.email,
-          createdAt: new Date()
+    saveMessage: function() {
+      const roomRef = db.collection("rooms").doc(this.room);
+      const newMessage = {
+        message: this.message,
+        author: this.authUser.email,
+        createdAt: new Date()
+      };
+      roomRef
+        .collection("chat")
+        .add(newMessage)
+        .then(docRef => {
+          console.log("Mensaje agregado con ID:", docRef.id);
+          this.scrollToBottom(".msg_history");
+          this.message = null;
+        })
+        .catch(error => {
+          console.log("Error agregando mensaje:", error);
         });
-        console.log("Document written with ID:", docRef.id);
-        this.scrollToBottom(".msg_history");
-        this.message = null;
-      } catch (error) {
-        console.log("Error adding document:", error);
-      }
     },
 
     fetchMessages() {
-      db.collection("chat")
+      const roomRef = db.collection("rooms").doc(this.room);
+      roomRef
+        .collection("chat")
         .orderBy("createdAt")
         .onSnapshot(querySnapshot => {
           let allMessages = [];
@@ -177,7 +179,7 @@ export default {
           });
 
           const promises = allMessages.map(message =>
-            db
+            roomRef
               .collection("users")
               .doc(message.author)
               .get()
@@ -199,7 +201,9 @@ export default {
     },
 
     fetchUsers() {
-      db.collection("users")
+      db.collection("rooms")
+        .doc(this.room)
+        .collection("users")
         .orderBy("lastUpdate")
         .onSnapshot(querySnapshot => {
           let allUsers = [];
@@ -256,8 +260,18 @@ export default {
   created() {
     const $router = this.$router;
 
+    if (!this.room) {
+      alert("Sala no especificada");
+      $router.push("/login");
+      return;
+    }
+
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
+        let roomRef;
+        roomRef = db.collection("rooms").doc(this.room);
+        roomRef.set({ id: this.room }, { merge: true }); // si ya existe, merge
+
         this.authUser = user;
         const newUser = {
           email: user.email,
@@ -265,7 +279,8 @@ export default {
           photoURL: user.photoURL,
           lastUpdate: new Date()
         };
-        db.collection("users")
+        roomRef
+          .collection("users")
           .doc(user.email)
           .set(newUser, { merge: true }); // si ya existe, merge
       } else {
