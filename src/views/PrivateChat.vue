@@ -1,7 +1,14 @@
 <template>
   <div class="container">
     <h3 class="text-center" :title="room">Mi Chat</h3>
-    <p>{{ roomUrl }}</p>
+    <p>
+      <input
+        type="text"
+        class="form-control text-center col-sm-2 d-inline-block"
+        v-model="newRoom"
+        @keyup.enter="gotoRoom"
+      />
+    </p>
     <h4 class="text-center">
       <div style="width: 50px; display:inline-block;">
         <img :src="authUser.photoURL" alt="Foto" />
@@ -117,6 +124,7 @@ export default {
 
   data() {
     return {
+      newRoom: null,
       message: null,
       messages: [],
       authUser: {},
@@ -147,12 +155,23 @@ export default {
   },
 
   methods: {
-    scrollToBottom(boxSelector) {
-      let box = document.querySelector(boxSelector);
-      if (!box) {
-        return;
+    logout() {
+      firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          this.$router.push(`/login/${this.room}`);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    gotoRoom() {
+      if (confirm(`Ir a la sala ${this.newRoom}?`)) {
+        const roomUrl = `/?room=${this.newRoom}`;
+        window.open(roomUrl, "_blank");
       }
-      box.scrollTop = box.scrollHeight;
     },
 
     saveMessage: function() {
@@ -166,7 +185,7 @@ export default {
         .collection("chat")
         .add(newMessage)
         .then(docRef => {
-          console.log("Mensaje agregado con ID:", docRef.id);
+          // console.log("Mensaje agregado con ID:", docRef.id);
           this.scrollToBottom(".msg_history");
           this.message = null;
         })
@@ -246,29 +265,26 @@ export default {
       }
     },
 
-    logout() {
-      firebase
-        .auth()
-        .signOut()
-        .then(() => {
-          this.$router.push(`/login/${this.room}`);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-
     searchUser() {
       window.clearTimeout(this.searchTimeout);
       this.searchTimeout = window.setTimeout(() => {
         this.filterUsers();
       }, 1000);
+    },
+
+    scrollToBottom(boxSelector) {
+      let box = document.querySelector(boxSelector);
+      if (!box) {
+        return;
+      }
+      box.scrollTop = box.scrollHeight;
     }
   },
 
   created() {
     if (this.roomParam) {
       this.$store.commit("setRoom", this.roomParam);
+      this.newRoom = this.roomParam;
     } else {
       alert("Sala no especificada");
       this.$router.push("/login");

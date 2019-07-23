@@ -37,5 +37,5 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 - El usuario que crea el chat es el administrador
 - Los usuarios tienen la opción de guardar la conversación. Un hash verifica que no haya sido alterada.
-- Los usuarios pueden cargar una conversación guardadd.
+- Los usuarios pueden cargar una conversación guardada.
 - Cuando el administrador sale, el chat es eliminado automáticamente
