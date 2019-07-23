@@ -1,12 +1,23 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Inicio</router-link>&nbsp;|
+      <router-link :to="`/?room=${room}`">Inicio</router-link>&nbsp;|
       <router-link to="/about">Ayuda</router-link>
     </div>
     <router-view />
   </div>
 </template>
+
+<script>
+export default {
+  computed: {
+    room() {
+      return this.$store.state.room;
+    }
+  }
+};
+</script>
+
 
 <style>
 #app {

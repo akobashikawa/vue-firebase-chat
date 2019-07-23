@@ -25,38 +25,29 @@ export default {
   name: "login",
 
   props: {
-    _room: {
+    roomParam: {
       type: String
     }
   },
 
-  data() {
-    return {
-      room: ""
-    };
+  computed: {
+    room() {
+      return this.$store.state.room;
+    }
   },
 
   created() {
-    if (this._room) {
-      this.room = this._room;
+    if (this.roomParam) {
+      this.$store.commit("setRoom", this.roomParam);
     } else {
-      this.room = this.getRandomRoomId();
+      this.$store.commit("randomRoom");
     }
   },
 
   methods: {
-    getRandomRoomId() {
-      // genera nombre aleatorio para la sala
-      const charmap = "0123456789abcdefghijklmnopqrstuvwxyz";
-      return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].reduce((s, x) => {
-        const i = Math.floor(Math.random() * charmap.length);
-        s += charmap[i];
-        return s;
-      }, "");
-    },
-
     login() {
       const room = this.room;
+      console.log(room);
       const $router = this.$router;
 
       var provider = new firebase.auth.GoogleAuthProvider();

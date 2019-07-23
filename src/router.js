@@ -14,10 +14,10 @@ export default new Router({
       path: '/',
       name: 'home',
       component: PrivateChat,
-      props: (route) => ({ room: route.query.room }),
+      props: (route) => ({ roomParam: route.query.room }),
     },
     {
-      path: '/login/:_room?',
+      path: '/login/:roomParam?',
       name: 'login',
       component: Login,
       props: true

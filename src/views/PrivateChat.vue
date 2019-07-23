@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <h3 class="text-center" :title="room">Mi Chat</h3>
+    <p>{{ roomUrl }}</p>
     <h4 class="text-center">
       <div style="width: 50px; display:inline-block;">
         <img :src="authUser.photoURL" alt="Foto" />
@@ -109,7 +110,7 @@ export default {
   name: "home",
 
   props: {
-    room: {
+    roomParam: {
       type: String
     }
   },
@@ -128,12 +129,20 @@ export default {
   },
 
   computed: {
-    messagesFiltered: function() {
+    room() {
+      return this.$store.state.room;
+    },
+
+    messagesFiltered() {
       return this.messages.filter(
         message =>
           this.usersSelected.hasOwnProperty(message.author) &&
           this.usersSelected[message.author]
       );
+    },
+
+    roomUrl: function() {
+      return window.location.href;
     }
   },
 
@@ -191,7 +200,7 @@ export default {
           );
 
           Promise.all(promises).then(() => {
-            console.log(allMessages);
+            // console.log(allMessages);
             this.messages = allMessages;
             setTimeout(() => {
               this.scrollToBottom(".msg_history");
@@ -211,7 +220,7 @@ export default {
             const data = doc.data();
             allUsers.push(data);
           });
-          console.log(allUsers);
+          // console.log(allUsers);
           this.users = allUsers;
           this.usersSelected = this.users.reduce((result, item) => {
             result[item.email] = true;
@@ -242,7 +251,7 @@ export default {
         .auth()
         .signOut()
         .then(() => {
-          this.$router.push("/");
+          this.$router.push(`/login/${this.room}`);
         })
         .catch(error => {
           console.log(error);
@@ -258,11 +267,11 @@ export default {
   },
 
   created() {
-    const $router = this.$router;
-
-    if (!this.room) {
+    if (this.roomParam) {
+      this.$store.commit("setRoom", this.roomParam);
+    } else {
       alert("Sala no especificada");
-      $router.push("/login");
+      this.$router.push("/login");
       return;
     }
 
@@ -298,7 +307,7 @@ export default {
         if (user) {
           next();
         } else {
-          vm.$router.push("/login");
+          vm.$router.push(`/login/${vm.$store.state.room}`);
         }
       });
     });
