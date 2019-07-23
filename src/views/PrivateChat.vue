@@ -8,6 +8,7 @@
         v-model="newRoom"
         @keyup.enter="gotoRoom"
       />
+      <button class="btn btn-sm ml-2" @click="showRoomUrl">Compartir</button>
     </p>
     <h4 class="text-center">
       <div style="width: 50px; display:inline-block;">
@@ -172,6 +173,10 @@ export default {
         const roomUrl = `/?room=${this.newRoom}`;
         window.open(roomUrl, "_blank");
       }
+    },
+
+    showRoomUrl() {
+      alert(window.location.href);
     },
 
     saveMessage: function() {
