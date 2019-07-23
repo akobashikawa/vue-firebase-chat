@@ -286,7 +286,6 @@ export default {
       this.$store.commit("setRoom", this.roomParam);
       this.newRoom = this.roomParam;
     } else {
-      alert("Sala no especificada");
       this.$router.push("/login");
       return;
     }

@@ -4,8 +4,9 @@
     <p>Simple chat para conversar con tus contactos.</p>
     <p>
       Ejemplo:
-      <code>/login/1234</code> para entrar a la sala 1234
+      <code>/login/world</code> para entrar a la sala
+      <code>world</code>
     </p>
-    <p>Las conversaciones de una sala se eliminan cuando todos salen.</p>
+    <p>Las conversaciones de una sala se eliminan al final.</p>
   </div>
 </template>

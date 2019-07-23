@@ -9,6 +9,7 @@
         placeholder="ID de la sala"
         v-model="room"
       />
+      <button class="btn btn-sm ml-2" @click="setNewRoom">Nuevo</button>
     </h3>
 
     <p class="mt-4">
@@ -47,7 +48,7 @@ export default {
   methods: {
     login() {
       const room = this.room;
-      console.log(room);
+      // console.log(room);
       const $router = this.$router;
 
       var provider = new firebase.auth.GoogleAuthProvider();
@@ -77,6 +78,10 @@ export default {
           // ...
           alert(`ERROR: ${errorCode}: ${errorMessage}`);
         });
+    },
+
+    setNewRoom() {
+      this.$store.commit("randomRoom");
     }
   }
 };
