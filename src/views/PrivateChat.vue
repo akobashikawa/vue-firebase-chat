@@ -2,13 +2,8 @@
   <div class="container">
     <h3 class="text-center" :title="room">Mi Chat</h3>
     <p>
-      <input
-        type="text"
-        class="form-control text-center col-sm-2 d-inline-block"
-        v-model="newRoom"
-        @keyup.enter="gotoRoom"
-      />
-      <button class="btn btn-sm ml-2" @click="showRoomUrl">Compartir</button>
+      <button class="btn btn-sm btn-outline-info ml-2" @click="showRoomUrl">{{ room }}</button>
+      <a class="btn btn-sm btn-outline-secondary ml-2" href="/login" target="_blank">Nuevo</a>
     </p>
     <h4 class="text-center">
       <div style="width: 50px; display:inline-block;">
@@ -82,7 +77,7 @@
                   <p>{{ message.message }}</p>
                   <span
                     class="time_date"
-                  >{{ message.authorUser.displayName }} | {{ message.createdAt.toDate() | moment('YYYY/MM/DD, HH:mm:ss') }}</span>
+                  >Yo | {{ message.createdAt.toDate() | moment('YYYY/MM/DD, HH:mm:ss') }}</span>
                 </div>
               </div>
             </div>
@@ -93,10 +88,10 @@
                 @keyup.enter="saveMessage"
                 v-model="message"
                 type="text"
-                class="write_msg"
+                class="form-control mb-2"
                 placeholder="Escribe un mensaje"
               />
-              <button @click="saveMessage" class="msg_send_btn" type="button">
+              <button @click="saveMessage" class="msg_send_btn mr-2" type="button">
                 <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
               </button>
             </div>
@@ -451,13 +446,14 @@ img {
   width: 92%;
 }
 .received_withd_msg p {
-  background: #ade none repeat scroll 0 0;
-  border-radius: 0 10px;
+  background: #fff none repeat scroll 0 0;
+  border-radius: 0 10px 10px 10px;
   color: #646464;
   font-size: 14px;
   margin: 0;
   padding: 5px 10px 5px 12px;
   width: 100%;
+  box-shadow: 1px 1px 5px #00000033;
 }
 .time_date {
   color: #747474;
@@ -472,17 +468,19 @@ img {
   float: left;
   padding: 30px 15px 0 25px;
   width: 60%;
+  background-color: #def;
 }
 
 .sent_msg p {
-  background: #05728f55 none repeat scroll 0 0;
-  border-radius: 0 10px;
+  background: #efe none repeat scroll 0 0;
+  border-radius: 10px 10px 0;
   font-size: 14px;
   margin: 0;
   color: #000;
   padding: 5px 10px 5px 12px;
   width: 100%;
   position: relative;
+  box-shadow: 1px 1px 5px #00000033;
 }
 .outgoing_msg {
   overflow: hidden;
@@ -492,9 +490,10 @@ img {
   float: right;
   width: 46%;
 }
+.input_msg_write {
+}
 .input_msg_write input {
-  background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
-  border: medium none;
+  background-color: rgba(0, 0, 0, 0) none repeat scroll 0 0;
   color: #4c4c4c;
   font-size: 15px;
   min-height: 48px;
@@ -502,11 +501,10 @@ img {
 }
 
 .type_msg {
-  border-top: 1px solid #c4c4c4;
   position: relative;
 }
 .msg_send_btn {
-  background: #05728f none repeat scroll 0 0;
+  background: #3aa none repeat scroll 0 0;
   border: medium none;
   border-radius: 50%;
   color: #fff;
@@ -515,7 +513,7 @@ img {
   height: 33px;
   position: absolute;
   right: 0;
-  top: 11px;
+  top: 8px;
   width: 33px;
 }
 .msg_send_btn::before {
