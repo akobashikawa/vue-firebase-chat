@@ -2,7 +2,11 @@
   <div class="container">
     <h3 class="text-center" :title="room">Mi Chat</h3>
     <p>
-      <button class="btn btn-sm btn-outline-info ml-2" @click="showRoomUrl">{{ room }}</button>
+      <button
+        class="btn btn-sm btn-outline-info ml-2"
+        @click="showRoomUrl"
+        title="Compartir url"
+      >{{ room }}</button>
       <a class="btn btn-sm btn-outline-secondary ml-2" href="/login" target="_blank">Nuevo</a>
     </p>
     <h4 class="text-center">

@@ -7,7 +7,7 @@
         type="text"
         class="form-control text-center col-sm-2 d-inline-block"
         placeholder="ID de la sala"
-        v-model="room"
+        v-model="newRoom"
       />
       <button class="btn btn-sm ml-2" @click="setNewRoom">Nuevo</button>
     </h3>
@@ -31,6 +31,12 @@ export default {
     }
   },
 
+  data() {
+    return {
+      newRoom: null
+    };
+  },
+
   computed: {
     room() {
       return this.$store.state.room;
@@ -38,6 +44,8 @@ export default {
   },
 
   created() {
+    this.newRoom = this.room;
+
     if (this.roomParam) {
       this.$store.commit("setRoom", this.roomParam);
     } else {
@@ -47,7 +55,7 @@ export default {
 
   methods: {
     login() {
-      const room = this.room;
+      const room = this.newRoom;
       // console.log(room);
       const $router = this.$router;
 

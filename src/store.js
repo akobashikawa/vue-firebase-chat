@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    room: 'world'
+    room: null
   },
   mutations: {
     setRoom(state, room) {
