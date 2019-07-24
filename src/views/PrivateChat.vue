@@ -453,7 +453,7 @@ img {
   margin: 0;
   padding: 5px 10px 5px 12px;
   width: 100%;
-  box-shadow: 1px 1px 5px #00000033;
+  box-shadow: 0px 1px 2px #00000033;
 }
 .time_date {
   color: #747474;
@@ -480,7 +480,7 @@ img {
   padding: 5px 10px 5px 12px;
   width: 100%;
   position: relative;
-  box-shadow: 1px 1px 5px #00000033;
+  box-shadow: 0px 1px 2px #00000033;
 }
 .outgoing_msg {
   overflow: hidden;
