@@ -7,6 +7,7 @@
         @click="showRoomUrl"
         title="Compartir url"
       >{{ room }}</button>
+      <button class="btn btn-sm btn-outline-success ml-2" @click="saveRoom">Guardar</button>
       <a class="btn btn-sm btn-outline-secondary ml-2" href="/login" target="_blank">Nuevo</a>
     </p>
     <h4 class="text-center">
@@ -176,6 +177,18 @@ export default {
 
     showRoomUrl() {
       alert(window.location.href);
+    },
+
+    saveRoom() {
+      const room = this.room;
+      const users = this.users.map(user => Object.assign({}, user));
+      const chat = this.messages.map(message => {
+        const _message = Object.assign({}, message);
+        delete _message.authorUser;
+        return _message;
+      });
+      const result = { room, users, chat };
+      alert(JSON.stringify(result));
     },
 
     saveMessage: function() {
